@@ -19,10 +19,6 @@
 #include <iostream>   // genuinely only here to output the word 'Dead'
 #include "../lib/low_level.h"// signal, flushBuffer,
 
-
-const int NUM_LEDS = 8;
-// !! Const Ints belong in a header file
-
 #ifndef TEST
 
 int main(){
