@@ -4,7 +4,6 @@ This library depends on a PixelList class and a Pixel class with several exposed
 program control functions
 
 sigint_handler(n)  // used in testing, when communicating with bcm chip
-!! find out more
 
 start()  // required at the start of main() to initiate and check gpio
 
@@ -16,11 +15,17 @@ non-exposed:
 
 PixelList Functions
 
-PixelList MyList  // creates new pixel list with no pixels
+PixelList MyList  // creates new pixel list with NUM_LED pixels
 
-a default PixelList 'Blinkt' is created at compile time in int main()
+PixelList MyList(n)  // creates a new pixel list with n pixels
 
+PixelList.fade(m)  // fades until gone with each step-decrease taking m millisecs
+
+PixelList.rise(m, b)  // pattern rises to brightness b im m-millisec steps
+
+A default PixelList 'Blinkt' is created at compile time in int main()
 Unless another PixelList is created and passed where appropriate, all operations are on Blinkt.
+
 
 pixel functions:
 
