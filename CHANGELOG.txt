@@ -1,0 +1,2 @@
+hauled out everything that looked pythonish.
+wrote a load of C++.  if the README.txt doesn't help, then the comments won't either
