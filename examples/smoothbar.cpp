@@ -23,9 +23,6 @@
 
 #include <cmath> // show me a sine!
 
-const int NUM_LEDS = 8;
-// !! Const Ints belong in a header file
-
 #define PI 3.14159265
 
 #ifndef TEST
