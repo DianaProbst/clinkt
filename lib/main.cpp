@@ -15,9 +15,6 @@ created by diana probst from skeleton of original blinkt python library from pim
 #include "pixel.h"
 #include "clinkt.h"
 
-#define NUM_LEDS 8
-// !! belongs in a config.h file
-
 
 #ifndef TEST
 
