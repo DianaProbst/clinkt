@@ -10,7 +10,12 @@
 const int MOSI=23;
 const int SCLK=24;
 
+/*
+  APA102 strip wakes on high, and sends brightness frame first.  Always &ed with this:
+ */
 
+// communication with APA strip
+const int APA_SOF = 0b11100000;
 
 // Constants for defaults in functions
 const int NUM_LEDS = 8;

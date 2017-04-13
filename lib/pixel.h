@@ -10,8 +10,6 @@
 #include <vector>
 #include "config.h"
 
-#define APA_SOF 0b11100000
-
 class Pixel
    {
    private:
@@ -20,7 +18,7 @@ class Pixel
    public:
      // First, the constructor:
      Pixel();
-     Pixel(uint8_t r, uint8_t g, uint8_t b, uint8_t br);
+     Pixel(uint8_t r, uint8_t g, uint8_t b, uint8_t br = defaultBrightness);
      Pixel(uint32_t colourInfo);
      uint32_t colour;
      void setP(uint8_t r, uint8_t g, uint8_t b, uint8_t br);

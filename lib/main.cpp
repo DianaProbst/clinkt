@@ -34,16 +34,15 @@ int main(){
   // defaults and useful pixels
   
   PixelList Blinkt;
-  Pixel myPixel = Pixel(255,255,255,3);
-  uint32_t red = 0b11111111000000000000000000000111;
-  uint32_t green = 0b00000000111111110000000000000111;
-  uint32_t blue = 0b00000000000000001111111100000111;
-  uint32_t white = 0b11111111111111111111111100000011; 
-  
+  Pixel myPixel = Pixel(255,255,255);
+  uint32_t red = 0xFF000003;               // hex codes fit in neatly, of course
+  uint32_t green = 0x00FF003;
+  uint32_t blue = 0x0000FF03;
+  uint32_t white = 0b11111111111111111111111100000011; // Last 0ctet takes APA framing and brightness
   
   setPixel(Blinkt, blue);    // default position is Pixel 0
   setPixel(Blinkt, blue+green, 1); // Pixels can be set by number
-  setPixel(Blinkt, 0b00000000111111110000000000000111, 2); // 8 bit r, 8 bit g, 8 bit b, 3 reserved bits set to 0, 5 bits brightness (to max 7, and we don't ask why)
+  setPixel(Blinkt, 0b00000000111111110000000000000111, 2);
   setPixel(Blinkt, green + red, 3);
   setPixel(Blinkt, red, 4);
   setPixel(Blinkt, 0, 5);  // blank pixel 'spacer'
