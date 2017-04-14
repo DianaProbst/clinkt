@@ -27,10 +27,8 @@ class Pixel
      
      void setBrightness(uint8_t br);
      uint8_t getBrightness();
-     
+
      void setColour(uint8_t r, uint8_t g, uint8_t b);  // calls setFullPixel with current brightness
-      
-      
    };
 
 
@@ -52,6 +50,7 @@ class PixelList
    void show();
    void fade(int millisecs = 500);
    void rise(int millisecs = 500, int brightnesss = 3);   //! arbitrary number
+   void crossfade(PixelList otherParent, int steps = 5);      //! more arbitrary numbers
  };
 
 inline void setPixel(PixelList& plist, uint32_t p = 7, int x = 0)

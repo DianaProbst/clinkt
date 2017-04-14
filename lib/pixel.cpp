@@ -70,6 +70,10 @@ PixelList::~PixelList()
 {
 }
 
+uint32_t PixelList::getPixel(int p)
+{ return pVector[p].getPixel();
+}
+
 void PixelList::fade(int millisecs){ //!! check brightness of each pixel
   int uInterval = (millisecs)*1000;  
   uint8_t fadeBr;
@@ -95,7 +99,6 @@ void PixelList::fade(int millisecs){ //!! check brightness of each pixel
   } 
 }
 
-
 void PixelList::rise(int millisecs, int brightness)
 {
   int uInterval = (millisecs * 1000);
@@ -107,6 +110,44 @@ void PixelList::rise(int millisecs, int brightness)
       usleep(uInterval);
     }
 }
+
+void PixelList::crossfade(PixelList otherParent, int steps)
+{
+  for (int i = 0; i < steps; i++)
+    {
+      for (int j = 0; j < NUM_LEDS; j++)
+	{
+	  uint8_t myRed = pVector[j].getPixel() >> 24;      // should have getRed() as a method - someone should write that.  Me.
+	  uint8_t myGreen = pVector[j].getPixel() >> 16;
+	  uint8_t myBlue = pVector[j].getPixel() >> 8;
+	  uint8_t myBright = pVector[j].getPixel() & 0b00000111;
+
+	  uint8_t otherRed = otherParent.getPixel(j) >> 24;      // should have getRed() as a method - someone should write that.  Me.
+	  uint8_t otherGreen = otherParent.getPixel(j) >> 16;
+	  uint8_t otherBlue = otherParent.getPixel(j) >> 8;
+	  uint8_t otherBright = otherParent.getPixel(j) & 0b00000111;
+
+	  int sign;
+	  sign = myRed > otherRed ? -1 : 1;
+	  myRed += sign * (std::abs(otherRed-myRed) / (steps - i));
+	  sign = myGreen > otherGreen ? -1 : 1;
+	  myGreen += sign * std::abs(otherGreen-myGreen) / (steps - i);
+	  sign = myBlue > otherBlue ? -1 : 1;
+	  myBlue += sign * std::abs(otherBlue-myBlue) / (steps - i);
+
+	  if  (myBright > otherBright)  // slow and clunky but this is a first attempt
+	    { myBright--;}
+	  else if (myBright < otherBright)
+	    { myBright ++;}
+
+	  setP(myRed, myGreen, myBlue, myBright, j);
+	  
+	}
+      show();
+      usleep(100000);
+    } 
+}
+
 
 void PixelList::setP(uint32_t colourInfo, int x)
 {
@@ -130,9 +171,6 @@ Pixel temp = pVector[x];
   pVector[x] = temp;
 
 }
-
-uint32_t PixelList::getPixel(int p)
-{ return pVector[p].getPixel(); }
 
 void PixelList::show()
 {
