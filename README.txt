@@ -2,7 +2,7 @@ This library depends on a PixelList class and a Pixel class with several exposed
 
 Requirements;
 
-requires bcm2835 library to communicate with pi gpio.
+requires bcm2835 library from http://www.airspayce.com/mikem/bcm2835/ to communicate with pi gpio.
 
 program control functions
 
