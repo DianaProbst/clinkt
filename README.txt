@@ -1,5 +1,8 @@
 This library depends on a PixelList class and a Pixel class with several exposed functions.  Arbitrary pixel lists can be used and kept, allowing for patterns to be built.  The library can drive any number of pixels that can be powered, in any rectangular configuration, with a little tweaking of the config.h file.
 
+Requirements;
+
+requires bcm2835 library to communicate with pi gpio.
 
 program control functions
 
