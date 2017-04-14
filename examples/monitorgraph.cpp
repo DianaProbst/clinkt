@@ -41,24 +41,25 @@ int main(){
   PixelList ActiveShields(NUM_LEDS);
   
   int shieldStrength;
-  
-  // replace NUM_LEDS with whatever input you desire
+  int shieldColour = 0x0000ff03;  
 
   while (true)
     {
+
       shieldStrength = (rand() % 8) + 1;
       for (int i = 0; i < shieldStrength; i++)
 	{
-	  ActiveShields.setFullPixel(0x0000FF03, i);
+	  ActiveShields.setFullPixel(shieldColour, i);
 	}
       for (int i = shieldStrength; i < NUM_LEDS; i++)
 	{
 	  ActiveShields.setFullPixel(0x00000000, i);
 	}
-      Shields.crossfade(ActiveShields);
+      Shields.crossfade(ActiveShields,10);
       Shields.show();
       usleep(1000000);
       Shields = ActiveShields;
+      shieldColour = (rand() | 0b00000001);
     }
   
   stop(); // ends gpio nicely in the highly strange event of us getting here

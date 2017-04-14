@@ -26,6 +26,8 @@ PixelList.fade(m)  // fades until gone with each step-decrease taking m millisec
 
 PixelList.rise(m, b)  // pattern rises to brightness b im m-millisec steps
 
+PixelList.crossfade(PL)  // fades from list PL to current list
+
 A default PixelList 'Blinkt' is created at compile time in int main()
 Unless another PixelList is created and passed where appropriate, all operations are on Blinkt.
 
