@@ -28,12 +28,6 @@
 
 static unsigned long long lastTotalUser, lastTotalUserLow, lastTotalSys, lastTotalIdle;
 
-void init(){
-  FILE* file = fopen("/proc/stat", "r");
-  fscanf(file, "cpu %llu %llu %llu %llu", &lastTotalUser, &lastTotalUserLow, &lastTotalSys, &lastTotalIdle);
-  fclose(file);
-}
-
 int getCPUValue(){
   long long percent;  // we're converting to 8 pixels so don't require much precision, but we increase our errors later, not now
   FILE* file;
@@ -91,8 +85,8 @@ int getMemValue(){
       }
     }
   fclose(file);
-  result = (memTotal - memAvailable) * 8;
-  return result / memTotal;
+  result = (memTotal - memAvailable);
+  return 8 * result / memTotal;
 }
 
 int main(){
@@ -113,13 +107,9 @@ int main(){
   
   PixelList Mem(NUM_LEDS);            // grab from /proc/meminfo
   for (int i = 0; i < NUM_LEDS; i++)
-    { CPU.setP(3, i);}
+    { Mem.setP(3, i);}
   PixelList NextMem = Mem;           
-
-  init(); // sets up mem, proc, &c initially
-
-  std::cout << getMemValue() << "\n"; 
-    
+ 
   while (true)
     {
       int shieldStrength = getCPUValue();
@@ -127,7 +117,8 @@ int main(){
 	{ // something is pretty damned wrong
 	  break;
 	}
-      shieldStrength /= 12;  // A little overflow never hurt anybody
+      shieldStrength /= 12;  // approximate mathematics
+      shieldStrength = shieldStrength > 8 ? 8 : shieldStrength;
       shieldStrength += 1;   // A light to say the program has come on is good
       for (int i = 0; i < shieldStrength; i++)
 	{
@@ -140,8 +131,7 @@ int main(){
       Mem.crossfade(CPU,7);
       Mem.show();
       usleep(1000000);
-      
-      
+            
       int laserStrength = getMemValue();
       if (laserStrength == -1)
 	{
