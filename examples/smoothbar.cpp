@@ -23,7 +23,7 @@
 
 #include <cmath> // show me a sine!
 
-#define PI 3.14159265
+const float PI=3.14159265; // const int pi...
 
 #ifndef TEST
 
@@ -40,7 +40,7 @@ int main(){
   PixelList Wheel(NUM_LEDS);
   Pixel temp;
   float radians;
-  uint8_t brightness = 3;
+  uint8_t brightness = 1;
   uint8_t redness;
   uint8_t greenness;
   uint8_t blueness;
@@ -55,20 +55,24 @@ int main(){
 	  sector ++;
 	  for (int degrees = 0; degrees < 60; degrees++)
 	    {
-	      radians = (degrees * 180/60) * PI / 180;
-	      uint8_t cosFun = (((int)(255 * cos(radians)) + 256)/2) % 256;
+	      radians = (((float)degrees) * 180.0/60.0) * PI / 180.0;
+	      uint8_t cosFun = (((int)(255 * cos(radians)) + 256)/2)%256; // Calculate and force to positive, divide by 2 to maintain ratio, trim in case of error
+	      radians = (((float)degrees+90) * 180.0/60.0) * PI / 180.0;
+	      uint8_t sinFun = (((int)(255 * sin(radians)) + 256)/2)%256; // Calculate and force to posittive
+
 	      uint8_t high = 255;
 	      uint8_t low = 0;
-	  
+	      
 	      switch (sector) {
-	      case 1: redness = high; greenness = (255 - cosFun); blueness = low; break;
+	      case 1: redness = high; greenness = sinFun; blueness = low; break;
 	      case 2: redness = cosFun; greenness = high; blueness = low; break;
-	      case 3: redness = low; greenness = high; blueness = (255 - cosFun); break; 
+	      case 3: redness = low; greenness = high; blueness = sinFun; break; 
 	      case 4: redness = low; greenness = cosFun; blueness = high; break;
-	      case 5: redness = (255-cosFun); greenness = low; blueness = high; break; 
+	      case 5: redness = sinFun; greenness = low; blueness = high; break; 
 	      case 6: redness = high; greenness = low; blueness = cosFun; break;
 	      }
-	  
+	      std::cout << "redness: " << redness + 0<< " greenness: " << greenness + 0<< " blueness: " << blueness + 0 << "\n";
+	      
 	      temp.setP(redness, greenness, blueness, brightness);
 	  
 	      for (int j = 0; j < NUM_LEDS; j++)
@@ -77,7 +81,7 @@ int main(){
 		}
 	  
 	      Wheel.show();
-	      usleep(10000);
+	      usleep(100000);
 	    }
 	}
     }

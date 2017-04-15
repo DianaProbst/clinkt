@@ -28,6 +28,13 @@
 
 static unsigned long long lastTotalUser, lastTotalUserLow, lastTotalSys, lastTotalIdle;
 
+void init(){
+  FILE* file;
+  file = fopen("/proc/stat", "r");
+  fscanf(file, "cpu %llu %llu %llu %llu", &lastTotalUser, &lastTotalUserLow, &lastTotalSys, &lastTotalIdle);
+  fclose(file);
+}
+
 int getCPUValue(){
   long long percent;  // we're converting to 8 pixels so don't require much precision, but we increase our errors later, not now
   FILE* file;
@@ -41,6 +48,8 @@ int getCPUValue(){
     { // overflow detection
       percent = -1;
     }
+  else if(totalUser == lastTotalUser && totalUserLow == lastTotalUserLow && totalSys == lastTotalSys && totalIdle == lastTotalIdle)
+    {return  0;}
   else { total = (totalUser - lastTotalUser) + (totalUserLow - lastTotalUserLow) + (totalSys - lastTotalSys);
     percent = total * 100;
     total += (totalIdle - lastTotalIdle);
@@ -90,7 +99,7 @@ int getMemValue(){
 }
 
 int main(){
-  
+
   if (start()){
     std::cout << "Unable to start apa102: bcm not initialising?\n";
     return 1;
@@ -98,6 +107,8 @@ int main(){
 
   signal(SIGINT, dieNicely);   // On keyboard interrupt, darkens pixels and stops gpio using exit(0)
 
+  init();
+  
   srand(time(NULL));
   
   PixelList CPU(NUM_LEDS);            // grab from /proc/stat
