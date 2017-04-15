@@ -26,41 +26,74 @@
 
 #ifndef TEST
 
-  static unsigned long long lastTotalUser, lastTotalUserLow, lastTotalSys, lastTotalIdle;
+static unsigned long long lastTotalUser, lastTotalUserLow, lastTotalSys, lastTotalIdle;
 
-  void init(){
-    FILE* file = fopen("/proc/stat", "r");
-    fscanf(file, "cpu %llu %llu %llu %llu", &lastTotalUser, &lastTotalUserLow, &lastTotalSys, &lastTotalIdle);
-    fclose(file);
-  }
+void init(){
+  FILE* file = fopen("/proc/stat", "r");
+  fscanf(file, "cpu %llu %llu %llu %llu", &lastTotalUser, &lastTotalUserLow, &lastTotalSys, &lastTotalIdle);
+  fclose(file);
+}
 
-  int getCurrentValue(){
-    long long percent;  // we're converting to 8 pixels so don't require much precision
-    FILE* file;
-    unsigned long long totalUser, totalUserLow, totalSys, totalIdle, total;
+int getCPUValue(){
+  long long percent;  // we're converting to 8 pixels so don't require much precision, but we increase our errors later, not now
+  FILE* file;
+  unsigned long long totalUser, totalUserLow, totalSys, totalIdle, total;
 
-    file = fopen("/proc/stat", "r");
-    fscanf(file, "cpu %llu %llu %llu %llu", &totalUser, &totalUserLow, &totalSys, &totalIdle);
-    fclose(file);
+  file = fopen("/proc/stat", "r");
+  fscanf(file, "cpu %llu %llu %llu %llu", &totalUser, &totalUserLow, &totalSys, &totalIdle);
+  fclose(file);
 
-    if (totalUser < lastTotalUser || totalUserLow < lastTotalUserLow || totalSys < lastTotalSys || totalIdle < lastTotalIdle)
-      { // overflow detection
-	percent = -1;
-      }
-    else { total = (totalUser - lastTotalUser) + (totalUserLow - lastTotalUserLow) + (totalSys - lastTotalSys);
-      percent = total * 100;
-      total += (totalIdle - lastTotalIdle);
-      percent /= total;
+  if (totalUser < lastTotalUser || totalUserLow < lastTotalUserLow || totalSys < lastTotalSys || totalIdle < lastTotalIdle)
+    { // overflow detection
+      percent = -1;
     }
-
-    lastTotalUser = totalUser;
-    lastTotalUserLow = totalUserLow;
-    lastTotalSys = totalSys;
-    lastTotalIdle = totalIdle;
-
-    return (int)percent;
+  else { total = (totalUser - lastTotalUser) + (totalUserLow - lastTotalUserLow) + (totalSys - lastTotalSys);
+    percent = total * 100;
+    total += (totalIdle - lastTotalIdle);
+    percent /= total;
   }
 
+  lastTotalUser = totalUser;
+  lastTotalUserLow = totalUserLow;
+  lastTotalSys = totalSys;
+  lastTotalIdle = totalIdle;
+
+  return (int)percent;
+}
+
+int parseLine(char* line){
+  // assumes a digit will be found and the line ends in ' kB'
+  int i = strlen(line);
+  const char* p = line;
+  while (*p < '0' || *p > '9') p++;
+  line[i-3] = '\0';
+  i = atoi(p);
+  return i;
+}
+
+int getMemValue(){
+  FILE* file;
+  uint32_t memTotal, memAvailable;
+  file = fopen("/proc/meminfo", "r");     // frankly astounded if this works
+  char line[128];
+  int result = -1;
+  
+  while (fgets(line, 128, file) != NULL)
+    { if (strncmp(line, "MemTotal:", 9) == 0){
+	memTotal = parseLine(line);
+	break;
+      }
+    }
+  while (fgets(line, 128, file) != NULL)
+    { if (strncmp(line, "MemAvailable:", 13) == 0){
+	memAvailable = parseLine(line);
+	break;
+      }
+    }
+  fclose(file);
+  result = (memTotal - memAvailable) * 8;
+  return result / memTotal;
+}
 
 int main(){
   
@@ -73,26 +106,26 @@ int main(){
 
   srand(time(NULL));
   
-  PixelList CPU(NUM_LEDS);
+  PixelList CPU(NUM_LEDS);            // grab from /proc/stat
   for (int i = 0; i < NUM_LEDS; i++)
     { CPU.setP(3, i);}
-
   PixelList NextCPU = CPU;
   
-  PixelList Mem(NUM_LEDS);
+  PixelList Mem(NUM_LEDS);            // grab from /proc/meminfo
   for (int i = 0; i < NUM_LEDS; i++)
     { CPU.setP(3, i);}
+  PixelList NextMem = Mem;           
 
+  init(); // sets up mem, proc, &c initially
 
-  PixelList Temp(NUM_LEDS);
-  for (int i = 0; i < NUM_LEDS; i++)
-    { CPU.setP(3, i);}
-  
+  std::cout << getMemValue() << "\n"; 
+    
   while (true)
     {
-      int shieldStrength = getCurrentValue();
+      int shieldStrength = getCPUValue();
       if (shieldStrength == -1)
-	{continue;
+	{ // something is pretty damned wrong
+	  break;
 	}
       shieldStrength /= 12;  // A little overflow never hurt anybody
       shieldStrength += 1;   // A light to say the program has come on is good
@@ -104,12 +137,30 @@ int main(){
 	{
 	  CPU.setFullPixel(0x00000000, i);
 	}
-      NextCPU.crossfade(CPU,10);
-      NextCPU.show();
+      Mem.crossfade(CPU,7);
+      Mem.show();
       usleep(1000000);
-      CPU = NextCPU;
+      
+      
+      int laserStrength = getMemValue();
+      if (laserStrength == -1)
+	{
+	  break;
+	}
+      laserStrength += 1;
+      for (int i = 0; i < laserStrength; i++)
+	{
+	  Mem.setFullPixel(0x0000FF03, i);
+	}
+      for (int i = laserStrength; i < NUM_LEDS; i++)
+	{
+	  Mem.setFullPixel(0x00000000, i);
+	}
+      CPU.crossfade(Mem,7);
+      CPU.show();
+      usleep(1000000);
     }
-  
+      
   stop(); // ends gpio nicely in the highly strange event of us getting here
   
   return 0;	
