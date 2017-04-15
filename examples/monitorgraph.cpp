@@ -8,8 +8,7 @@
 //                                                                               //
 //-------------------------------------------------------------------------------//
 
-/** Shows the use of a pixel grid as a graph
- **/
+/** Shows the use of dual pixel grids in crossfade() **/
 
 
 #include <bcm2835.h>  // communicate with gpio
@@ -59,7 +58,7 @@ int main(){
       Shields.show();
       usleep(1000000);
       Shields = ActiveShields;
-      shieldColour = (rand() | 0b00000001);
+      shieldColour = (rand() | 0b00000000);
     }
   
   stop(); // ends gpio nicely in the highly strange event of us getting here

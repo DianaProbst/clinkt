@@ -1,5 +1,4 @@
 #include <iostream>
-// #include <bitset> // debugging p7/0 problem
 #include "pixel.h"
 #include <unistd.h> // usleep
 
@@ -52,8 +51,6 @@ void Pixel::setColour(uint8_t r, uint8_t g, uint8_t b){  // calls setP with defa
   setP(r, g, b, getBrightness());  // default brightness defined as static
 }
 
-
-
 PixelList::PixelList()
 {
   for (int i = 0; i < 8; i++)
@@ -81,14 +78,14 @@ void PixelList::fade(int millisecs){ //!! check brightness of each pixel
   
   for (int i = 0; i < 7; i++){ 
      //!! arbitrary j 
-      for (int j = 0; j < 8; j++)  // We have to run through each pixel.
+      for (int j = 0; j < 8; j++)
 	{
 	  fadeBr = pVector[j].getBrightness();
 	  if (fadeBr > 0)
 	    { fadeBr -= 1;
 	    }
 	  minBr += fadeBr;
-	  pVector[j].setBrightness(fadeBr); // Write setBrightnes()
+	  pVector[j].setBrightness(fadeBr);
 	}
       show();
       usleep(uInterval);
@@ -122,7 +119,7 @@ void PixelList::crossfade(PixelList otherParent, int steps)
 	  uint8_t myBlue = pVector[j].getPixel() >> 8;
 	  uint8_t myBright = pVector[j].getPixel() & 0b00000111;
 
-	  uint8_t otherRed = otherParent.getPixel(j) >> 24;      // should have getRed() as a method - someone should write that.  Me.
+	  uint8_t otherRed = otherParent.getPixel(j) >> 24;
 	  uint8_t otherGreen = otherParent.getPixel(j) >> 16;
 	  uint8_t otherBlue = otherParent.getPixel(j) >> 8;
 	  uint8_t otherBright = otherParent.getPixel(j) & 0b00000111;
@@ -135,16 +132,15 @@ void PixelList::crossfade(PixelList otherParent, int steps)
 	  sign = myBlue > otherBlue ? -1 : 1;
 	  myBlue += sign * std::abs(otherBlue-myBlue) / (steps - i);
 
-	  if  (myBright > otherBright)  // slow and clunky but this is a first attempt
+	  if  (myBright > otherBright)  // need a method that takes into account steps and granularity
 	    { myBright--;}
 	  else if (myBright < otherBright)
 	    { myBright ++;}
-
-	  setP(myRed, myGreen, myBlue, myBright, j);
 	  
+	  setP(myRed, myGreen, myBlue, myBright, j);	  
 	}
       show();
-      usleep(100000);
+      usleep(1000000/steps);
     } 
 }
 

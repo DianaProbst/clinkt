@@ -33,3 +33,7 @@ gradientgraph: examples/gradientgraph.cpp
 
 monitorgraph: examples/monitorgraph.cpp
 	$(CC) -$(CXXFLAGS) -std=c++11 lib/clinkt.cpp lib/pixel.cpp lib/low_level.cpp examples/monitorgraph.cpp -l bcm2835 -o build/monitorgraph
+
+sysmonitor: examples/sysmonitor.cpp
+	$(CC) -$(CXXFLAGS) -std=c++11 lib/clinkt.cpp lib/pixel.cpp lib/low_level.cpp examples/sysmonitor.cpp -l bcm2835 -o build/sysmonitor
+
