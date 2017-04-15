@@ -71,7 +71,6 @@ int main(){
 	      case 5: redness = sinFun; greenness = low; blueness = high; break; 
 	      case 6: redness = high; greenness = low; blueness = cosFun; break;
 	      }
-	      std::cout << "redness: " << redness + 0<< " greenness: " << greenness + 0<< " blueness: " << blueness + 0 << "\n";
 	      
 	      temp.setP(redness, greenness, blueness, brightness);
 	  
@@ -81,7 +80,7 @@ int main(){
 		}
 	  
 	      Wheel.show();
-	      usleep(100000);
+	      usleep(10000);
 	    }
 	}
     }
