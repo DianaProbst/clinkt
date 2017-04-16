@@ -36,7 +36,7 @@ int main(){
   signal(SIGINT, dieNicely);   // On keyboard interrupt, darkens pixels and stops gpio
                                // uses exit(0) - write your own if that is a deal-breaker
 
-  std::array<int, 15>pattern {0, 0, 0, 0, 0, 0, 0, 0, 4, 16, 64, 255, 64, 16, 4};
+  std::array<int, 16>pattern {0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 16, 64, 255, 64, 16, 4};
 
   PixelList Scanner(NUM_LEDS);
   Pixel temp;
@@ -53,6 +53,17 @@ int main(){
 	  Scanner.show();
 	  usleep(250000);
 	}
+      for (uint8_t i = 0; i < pattern.size(); i++)
+	{
+	  for (int j = 0; j < NUM_LEDS; j++)
+	    {
+	      temp.setP(pattern[ (NUM_LEDS - (j + i)) % pattern.size()], 0, 0, 6); 
+	      setPixel(Scanner, temp.getPixel(), NUM_LEDS - (j + 1));
+	    }
+	  Scanner.show();
+	  usleep(250000);
+	} 
+
     }
   stop(); // ends gpio nicely in the highly strange event of us getting here
   
