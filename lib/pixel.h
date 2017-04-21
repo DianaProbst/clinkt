@@ -23,6 +23,7 @@ class Pixel
      uint32_t colour;
      void setP(uint8_t r, uint8_t g, uint8_t b, uint8_t br);
      void setP(uint32_t colourInfo);
+     void setHexPixel(std::string hexValue, uint8_t brightness = 3);
      uint32_t getPixel();   /// returns Pixel.colour
      
      void setBrightness(uint8_t br);
@@ -35,7 +36,7 @@ class Pixel
 class PixelList
  {
  private:
-   std::vector<Pixel> pVector;  // eeek.    But it lets us try a thing...
+   std::vector<Pixel> pVector;
  public:
    //  constructor:
    PixelList(void);

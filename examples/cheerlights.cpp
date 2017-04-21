@@ -8,7 +8,7 @@
 
 /** Shows a bar of pixels coloured based on the cheerlights channel on thingspeak.com
 
-thingspeak has public channels acceible without an API key
+thingspeak has public channels accessible without an API key
 
  **/
 
@@ -21,6 +21,7 @@ thingspeak has public channels acceible without an API key
 #include "../lib/clinkt.h"   // just leave this one in
 #include <iostream>   // genuinely only here to output the word 'Dead'
 #include "../lib/low_level.h"// signal, flushBuffer,
+#include "../lib/parser.h"   // cleanHexCode
 
 #include <curl/curl.h>  // sudo apt-get install libcurl4-openssl-dev or your local equivalent
                         // add -l curl to Makefile
@@ -58,17 +59,17 @@ int main(){
   PixelList Bar(NUM_LEDS);
   Pixel temp;
   uint8_t brightness = 3;
-
+  
   //cycle through colour space wheeeeeeeeeee
   while (true)
     {
       result = curl_easy_perform(myHandle); // do the grabbing
       // grab cheerlights colour with libcurl
-      if (result != 0)
-	{//usleep(5000000);
+      if (result != 0)  // returns 0, OK.  No error message
+	{ usleep(1000000);
 	  continue;}  // try again
 
-      temp.setHexPixel(readBuffer, brightness);
+      temp.setHexPixel(cleanHexCode(readBuffer), brightness);
       
       for (int i = 0; i < NUM_LEDS; i++)
 	{    
@@ -76,7 +77,7 @@ int main(){
 	}
 
       Bar.show();
-      usleep(10000);
+      usleep(100000);
     }
     
   curl_easy_cleanup(myHandle);   // if we get here something is badly wrong with the entire universe

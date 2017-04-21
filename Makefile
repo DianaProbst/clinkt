@@ -1,5 +1,5 @@
 CC=g++
-CXXFLAGS=Wall
+CXXFLAGS=Wall -g
 DEPS=lib/clinkt.cpp lib/pixel.cpp lib/low_level.cpp
 
 all:
@@ -40,4 +40,7 @@ monitorgraph: examples/monitorgraph.cpp
 
 sysmonitor: examples/sysmonitor.cpp
 	$(CC) -$(CXXFLAGS) -std=c++11 $(DEPS) examples/sysmonitor.cpp -l bcm2835 -o build/sysmonitor
+
+cheerlights: examples/cheerlights.cpp
+	$(CC) -$(CXXFLAGS) -std=c++11 $(DEPS) lib/parser.cpp examples/cheerlights.cpp -l bcm2835 -l curl -o build/cheerlights
 

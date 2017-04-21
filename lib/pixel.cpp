@@ -24,6 +24,18 @@ void Pixel::setP(uint32_t colourInfo){
   colour = colourInfo;
 }
 
+void Pixel::setHexPixel(std::string hexValue, uint8_t brightness)
+{  // expects value of form ffffff
+  uint32_t result;
+  if (hexValue.length() == 6)
+    {
+      result = stoi(hexValue, NULL, 16);
+     
+    }
+  result <<=  8;
+  setP(result + brightness);
+}
+
 uint32_t Pixel::getPixel()
 {
   return colour;
